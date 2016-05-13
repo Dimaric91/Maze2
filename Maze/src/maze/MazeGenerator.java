@@ -28,15 +28,15 @@ public class MazeGenerator {
 		dfsColors.add(pointer);
 		
 		while(!stack.isEmpty()) {
-			Cell neighbor = getNeighbor(ret, pointer);
-			if (neighbor == null) {
-				stack.pop();
-				pointer = stack.peek();
-			} else {
+			try {
+				Cell neighbor = getNeighbor(ret, pointer);
 				removeBorder(pointer, neighbor);
 				pointer = neighbor;
 				stack.push(pointer);
 				dfsColors.add(pointer);
+			} catch (NoNeighborsException e) {
+				stack.pop();
+				pointer = stack.peek();
 			}
 		}
 		
@@ -59,7 +59,7 @@ public class MazeGenerator {
 		}
 	}
 	
-	private static Cell getNeighbor(Maze m, Cell c) {
+	private static Cell getNeighbor(Maze m, Cell c) throws NoNeighborsException {
 		List<Cell> ret = m.getNeighbors(c.getX(), c.getY());
 		
 		Iterator<Cell> it = ret.iterator();
@@ -69,11 +69,16 @@ public class MazeGenerator {
 				it.remove();
 			}
 		}
-		return ret.isEmpty() ? null : ret.get(rnd.nextInt(ret.size()));
+		if (ret.isEmpty()) {
+			throw new NoNeighborsException();
+		} else {
+			
+		}
+		return ret.get(rnd.nextInt(ret.size()));
 	}
 	
 	public static void main(String[] args) {
-		MazeGenerator.newInstance(7, 7).print();
+		MazeGenerator.newInstance(10, 10).print();
 	}
 	
 }
